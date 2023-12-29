@@ -15,6 +15,15 @@ public:
   }
 };
 
+class DynamicAABBTreeCollisionManager : public fcl::DynamicAABBTreeCollisionManagerd {
+ public:
+
+  inline void defaultCollide(fcl::CollisionObjectd* obj, void* cdata) const {
+    this->collide(obj, cdata, fcl::DefaultCollisionFunction);
+  }
+
+};
+
 using DefaultCollisionDatad = fcl::DefaultCollisionData<double>;
 
 #endif  // FCL_FCL_HELPER_H

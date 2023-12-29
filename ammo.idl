@@ -13,15 +13,27 @@ interface Matrix3d {
 };
 
 [Prefix="fcl::"]
-interface CollisionGeometryd {
+interface Quaterniond {
+    void Quaterniond();
 
 };
 
 [Prefix="fcl::"]
-interface DynamicAABBTreeCollisionManagerd {
-    void DynamicAABBTreeCollisionManagerd();
+interface Transform3d {
+    void Transform3d();
+
+};
+
+[Prefix="fcl::"]
+interface CollisionGeometryd {
+
+};
+
+interface DynamicAABBTreeCollisionManager {
+    void DynamicAABBTreeCollisionManager();
     void registerObject(CollisionObjectd obj);
     void unregisterObject(CollisionObjectd obj);
+    void defaultCollide(CollisionObjectd obj, VoidPtr cdata);
     void setup();
     void update();
     void clear();
@@ -68,6 +80,34 @@ Sphered implements CollisionGeometryd;
 
 [Prefix="fcl::"]
 interface CollisionObjectd {
+
+    VoidPtr getUserData();
+
+    void setUserData(VoidPtr data);
+
+    void computeAABB();
+
+    [Const, Value] Vector3d getTranslation();
+
+    [Const, Value] Matrix3d getRotation();
+
+    void setTranslation([Const, Ref] Vector3d R);
+
+    void setTransform([Const, Ref] Matrix3d R, [Const, Ref] Vector3d T);
+
+    void setTransform([Const, Ref] Transform3d tf);
+
+    void setIdentityTransform();
+
+    [Const] CollisionGeometryd getCollisionGeometry();
+
+    double getCostDensity();
+
+    boolean isOccupied();
+
+    boolean isFree();
+
+    boolean isUncertain();
 
 };
 

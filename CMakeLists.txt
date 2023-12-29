@@ -498,3 +498,8 @@ if (EMSCRIPTEN)
           VERBATIM)
   add_custom_target(fcl-wasm ALL DEPENDS fcl.wasm.js fcl.wasm.wasm)
 endif ()
+
+set(CMAKE_C_FLAGS_DEBUG "-g3 -O1 -Werror -Wall -Wno-unused-but-set-variable")
+set(CMAKE_CXX_FLAGS_DEBUG "-g3 -O1 -Werror -Wall -Wno-unused-but-set-variable")
+set(CMAKE_C_FLAGS_RELEASE "-g0 -O3 -Werror -Wall -Wno-unused-but-set-variable")
+set(CMAKE_CXX_FLAGS_RELEASE "-g0 -O3 -Werror -Wall -Wno-unused-but-set-variable")
