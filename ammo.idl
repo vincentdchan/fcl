@@ -37,7 +37,21 @@ interface DynamicAABBTreeCollisionManager {
     void unregisterObject(CollisionObjectDelegate obj);
     void defaultCollide(CollisionObjectDelegate obj, VoidPtr cdata);
     void internalCollide(VoidPtr cdata);
-    void collideWidth(DynamicAABBTreeCollisionManager manager, VoidPtr data);
+    void collideWith(DynamicAABBTreeCollisionManager manager, VoidPtr data);
+    void setup();
+    void update();
+    void clear();
+    boolean empty();
+    unsigned long size();
+};
+
+interface DynamicAABBTreeCollisionManager_Array {
+    void DynamicAABBTreeCollisionManager_Array();
+    void registerObject(CollisionObjectDelegate obj);
+    void unregisterObject(CollisionObjectDelegate obj);
+    void defaultCollide(CollisionObjectDelegate obj, VoidPtr cdata);
+    void internalCollide(VoidPtr cdata);
+    void collideWith(DynamicAABBTreeCollisionManager_Array manager, VoidPtr data);
     void setup();
     void update();
     void clear();
@@ -126,6 +140,10 @@ interface DefaultCollisionDatad {
 interface CollisionRequestd {
     attribute unsigned long num_max_contacts;
     attribute boolean enable_contact;
+    attribute unsigned long num_max_cost_sources;
+    attribute boolean enable_cost;
+    attribute boolean use_approximate_cost;
+    attribute GJKSolverType gjk_solver_type;
 };
 
 [Prefix="fcl::"]
@@ -147,4 +165,9 @@ interface Contactd {
     attribute long b2;
     [Value] attribute Vector3d normal;
     [Value] attribute Vector3d pos;
+};
+
+enum GJKSolverType {
+    "fcl::GST_LIBCCD",
+    "fcl::GST_INDEP"
 };

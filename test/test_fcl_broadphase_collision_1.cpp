@@ -579,6 +579,49 @@ void broad_phase_update_collision_test(S env_scale, std::size_t env_size, std::s
   std::cout << std::endl;
   std::cout << std::endl;
 }
+GTEST_TEST(FCL_BROADPHASE, my_test) {
+  auto geo = new fcl::Capsuled(0.5, 2);
+  auto character = new fcl::CollisionObjectd(std::shared_ptr<fcl::Capsuled>(geo));
+  character->setTranslation(fcl::Vector3d(
+      -1.6153597831726074,
+      -1.0,
+      -1.1002814769744873
+      ));
+  character->computeAABB();
+
+  fcl::DynamicAABBTreeCollisionManagerd manager;
+
+//  manager.registerObject(character);
+
+  for (int i = -10; i < 10; i++) {
+    for (int j = -10; j < 10; j++) {
+
+      auto blockGeo = new fcl::Boxd(1, 1, 1);
+      auto block = new fcl::CollisionObjectd(std::shared_ptr<fcl::Boxd>(blockGeo));
+      fcl::Vector3d t(i, -2.0, j);
+      block->setTranslation(t);
+      block->computeAABB();
+
+      manager.registerObject(block);
+    }
+  }
+
+  manager.setup();
+  manager.update();
+
+  fcl::DefaultCollisionData<double> data;
+  data.request.gjk_solver_type = GST_INDEP;
+  data.request.enable_contact = true;
+
+  manager.collide(character, reinterpret_cast<void*>(&data), fcl::DefaultCollisionFunction);
+
+  std::cout << "done:" << data.done << " data:" << data.result.numContacts() << std::endl;
+
+  for (int i = 0; i < data.result.numContacts(); i++) {
+    auto& contact = data.result.getContact(i);
+    std::cout << "i:" << i << " " << contact.normal << " pos:" << contact.pos << std::endl;
+  }
+}
 
 //==============================================================================
 int main(int argc, char* argv[])

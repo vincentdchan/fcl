@@ -68,10 +68,12 @@ macro(add_fcl_test test_file_name)
   target_link_libraries(${test_name} fcl test_fcl_utility GTest::gtest_main)
   gtest_discover_tests(${test_name})
 
+  if (EMSCRIPTEN)
   set_target_properties(${test_name} PROPERTIES LINK_FLAGS
           " -s ALLOW_MEMORY_GROWTH=1 \
             -s INITIAL_MEMORY=67108864 \
             ")
+  endif ()
 
 endmacro(add_fcl_test)
 

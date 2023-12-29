@@ -7,7 +7,10 @@
 #include <memory>
 
 #include "fcl/broadphase/broadphase_dynamic_AABB_tree.h"
+#include "fcl/broadphase/broadphase_dynamic_AABB_tree_array.h"
 #include "fcl/broadphase/default_broadphase_callbacks.h"
+
+using GJKSolverType = fcl::GJKSolverType;
 
 class CollisionObjectDelegate : public fcl::CollisionObjectd {
 public:
@@ -16,7 +19,7 @@ public:
 };
 
 class DynamicAABBTreeCollisionManager : public fcl::DynamicAABBTreeCollisionManagerd {
- public:
+public:
 
   inline void defaultCollide(fcl::CollisionObjectd* obj, void* cdata) const {
     this->collide(obj, cdata, fcl::DefaultCollisionFunction);
@@ -26,7 +29,24 @@ class DynamicAABBTreeCollisionManager : public fcl::DynamicAABBTreeCollisionMana
     this->collide(cdata, fcl::DefaultCollisionFunction);
   }
 
-  inline void collideWidth(DynamicAABBTreeCollisionManager* manager, void* cdata) const {
+  inline void collideWith(DynamicAABBTreeCollisionManager* manager, void* cdata) const {
+    this->collide(manager, cdata, fcl::DefaultCollisionFunction);
+  }
+
+};
+
+class DynamicAABBTreeCollisionManager_Array : public fcl::DynamicAABBTreeCollisionManager_Array<double> {
+public:
+
+  inline void defaultCollide(fcl::CollisionObjectd* obj, void* cdata) const {
+    this->collide(obj, cdata, fcl::DefaultCollisionFunction);
+  }
+
+  inline void internalCollide(void* cdata) const {
+    this->collide(cdata, fcl::DefaultCollisionFunction);
+  }
+
+  inline void collideWith(DynamicAABBTreeCollisionManager_Array* manager, void* cdata) const {
     this->collide(manager, cdata, fcl::DefaultCollisionFunction);
   }
 
