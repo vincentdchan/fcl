@@ -22,6 +22,10 @@ class DynamicAABBTreeCollisionManager : public fcl::DynamicAABBTreeCollisionMana
     this->collide(obj, cdata, fcl::DefaultCollisionFunction);
   }
 
+  inline void internalCollide(void* cdata) const {
+    this->collide(cdata, fcl::DefaultCollisionFunction);
+  }
+
 };
 
 using DefaultCollisionDatad = fcl::DefaultCollisionData<double>;

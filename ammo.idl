@@ -3,7 +3,9 @@
 interface Vector3d {
     void Vector3d();
     void Vector3d(double x, double y, double z);
-
+    double x();
+    double y();
+    double z();
 };
 
 [Prefix="fcl::"]
@@ -31,9 +33,10 @@ interface CollisionGeometryd {
 
 interface DynamicAABBTreeCollisionManager {
     void DynamicAABBTreeCollisionManager();
-    void registerObject(CollisionObjectd obj);
-    void unregisterObject(CollisionObjectd obj);
-    void defaultCollide(CollisionObjectd obj, VoidPtr cdata);
+    void registerObject(CollisionObjectDelegate obj);
+    void unregisterObject(CollisionObjectDelegate obj);
+    void defaultCollide(CollisionObjectDelegate obj, VoidPtr cdata);
+    void internalCollide(VoidPtr cdata);
     void setup();
     void update();
     void clear();
@@ -78,8 +81,8 @@ interface Sphered {
 };
 Sphered implements CollisionGeometryd;
 
-[Prefix="fcl::"]
-interface CollisionObjectd {
+interface CollisionObjectDelegate {
+    void CollisionObjectDelegate(CollisionGeometryd cgeom);
 
     VoidPtr getUserData();
 
@@ -111,12 +114,8 @@ interface CollisionObjectd {
 
 };
 
-interface CollisionObjectDelegate {
-    void CollisionObjectDelegate(CollisionGeometryd cgeom);
-};
-CollisionObjectDelegate implements CollisionObjectd;
-
 interface DefaultCollisionDatad {
+    void DefaultCollisionDatad();
     [Value] attribute CollisionRequestd request;
     [Value] attribute CollisionResultd result;
     attribute boolean done;

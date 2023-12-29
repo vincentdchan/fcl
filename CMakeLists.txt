@@ -492,7 +492,7 @@ set(EMCC_WASM_ARGS ${EMCC_ARGS}
 if (EMSCRIPTEN)
   add_custom_command(
           OUTPUT fcl.wasm.js fcl.wasm.wasm
-          COMMAND emcc ${CMAKE_CURRENT_BINARY_DIR}/glue.o ${CMAKE_CURRENT_BINARY_DIR}/lib/libfcl.a ${EMCC_WASM_ARGS} -o fcl.wasm.js
+          COMMAND emcc ${CMAKE_CURRENT_BINARY_DIR}/glue.o ${CMAKE_CURRENT_BINARY_DIR}/lib/libfcl.a ${CMAKE_CURRENT_BINARY_DIR}/lib/libccd.a ${EMCC_WASM_ARGS} -o fcl.wasm.js
           DEPENDS fcl-bindings ${AMMO_FRONT_MATTER_FILE} ${AMMO_ONLOAD_FILE} fcl
           COMMENT "Building fcl webassembly"
           VERBATIM)
