@@ -51,6 +51,9 @@ template <typename S>
 class FCL_EXPORT CollisionObject
 {
 public:
+ inline CollisionObject(CollisionGeometry<S> *cgeom): CollisionObject(std::shared_ptr<CollisionGeometry<S>>(cgeom)) {
+ }
+
   CollisionObject(const std::shared_ptr<CollisionGeometry<S>>& cgeom);
 
   CollisionObject(const std::shared_ptr<CollisionGeometry<S>>& cgeom,

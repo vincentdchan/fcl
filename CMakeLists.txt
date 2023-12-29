@@ -172,17 +172,25 @@ else()
   set(FCL_HAVE_EIGEN FALSE)
 endif()
 
+add_subdirectory(./third_party/libccd)
+add_subdirectory(./third_party/eigen-3.4.0)
+
 #===============================================================================
 # Find required dependency libccd
 #
 # If libccd is not found, manually set the cache variables CCD_INCLUDE_DIR and
 # CCD_LIBRARY
 #===============================================================================
-find_package(ccd QUIET)
+#set(EIGEN3_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/third_party/eigen-3.4.0)
+set(CCD_INCLUDE_DIR ${CMAKE_CURRENT_BINARY_DIR}/third_party/libccd/src)
+include_directories(${CMAKE_CURRENT_BINARY_DIR}/third_party/libccd/src)
+include_directories(./third_party/libccd/src)
+set(CCD_LIBRARY ${CMAKE_CURRENT_BINARY_DIR}/third_party/libccd/src)
+link_libraries(ccd)
 
 # If ccd-config.cmake is not found, use pkg-config and/or find_path() and
 # find_library()
-if(NOT ccd_FOUND)
+#if(NOT ccd_FOUND)
   if(PKG_CONFIG_FOUND)
     pkg_search_module(PC_CCD ccd libccd)
   endif()
@@ -220,7 +228,7 @@ if(NOT ccd_FOUND)
 
     mark_as_advanced(CCD_INCLUDE_DIR CCD_LIBRARY)
   endif()
-endif()
+#endif()
 
 if(NOT ccd_FOUND)
   message(FATAL_ERROR "CCD is required by FCL")
@@ -342,7 +350,7 @@ add_subdirectory(include/fcl)
 
 set(PKG_DESC "Flexible Collision Library")
 
-set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD 17)
 
 configure_file(fcl.pc.in fcl.pc @ONLY)
 
@@ -422,3 +430,71 @@ if(DOXYGEN_FOUND)
   )
 
 endif()
+
+FIND_PACKAGE(Python3)
+set(PYTHON ${Python3_EXECUTABLE} CACHE STRING "Python path")
+set(EMSCRIPTEN_ROOT $ENV{EMSDK}/upstream/emscripten CACHE STRING "Emscripten path")
+set(CMAKE_TOOLCHAIN_FILE ${EMSCRIPTEN_ROOT}/cmake/Modules/Platform/Emscripten.cmake)
+set(WEBIDL_BINDER_SCRIPT ${EMSCRIPTEN_ROOT}/tools/webidl_binder.py)
+
+set(AMMO_IDL_FILE ${CMAKE_CURRENT_SOURCE_DIR}/ammo.idl)
+
+set(EMCC_GLUE_ARGS
+        -c
+        -I${CMAKE_CURRENT_BINARY_DIR}/include
+        -I${CMAKE_CURRENT_SOURCE_DIR}/include
+        -I${CMAKE_CURRENT_SOURCE_DIR}/third_party/eigen-3.4.0
+        -I${CCD_INCLUDE_DIR}
+        -I${CMAKE_CURRENT_SOURCE_DIR}/third_party/libccd/src
+        -include${CMAKE_CURRENT_BINARY_DIR}/include/fcl/export.h
+        -include${CMAKE_CURRENT_SOURCE_DIR}/fcl_helper.h
+        )
+
+add_custom_command(
+        OUTPUT glue.cpp glue.js
+        BYPRODUCTS parser.out WebIDLGrammar.pkl
+        COMMAND ${PYTHON} ${WEBIDL_BINDER_SCRIPT} ${AMMO_IDL_FILE} glue
+        DEPENDS ${AMMO_IDL_FILE}
+        COMMENT "Generating ammo bindings"
+        VERBATIM)
+add_custom_command(
+        OUTPUT glue.o
+        COMMAND emcc glue.cpp ${EMCC_GLUE_ARGS} -o glue.o
+        DEPENDS glue.cpp ${AMMO_HEADER_FILE}
+        COMMENT "Building ammo bindings"
+        VERBATIM)
+add_custom_target(fcl-bindings ALL DEPENDS glue.js glue.o)
+
+# Default is 64*1024*1024 = 64MB
+set(TOTAL_MEMORY 67108864 CACHE STRING "Total Memory")
+
+set(EMCC_ARGS
+#        --extern-pre-js ${AMMO_FRONT_MATTER_FILE}
+        --post-js glue.js
+#        --post-js ${AMMO_ONLOAD_FILE}
+        ${ARGS}
+        -s EXPORT_ES6=1
+        -s LLD_REPORT_UNDEFINED=1
+        -s ENVIRONMENT='web'
+        -s ALLOW_MEMORY_GROWTH=1
+        -s EXPORTED_FUNCTIONS=["_malloc"]
+        -s EXPORTED_RUNTIME_METHODS=["UTF8ToString"]
+        -s EXTRA_EXPORTED_RUNTIME_METHODS=["addFunction"]
+        -s EXPORT_NAME="Fcl"
+        -s MODULARIZE=1
+        -s NO_EXIT_RUNTIME=1
+        -s NO_FILESYSTEM=1
+        -s TOTAL_MEMORY=${TOTAL_MEMORY})
+
+set(EMCC_WASM_ARGS ${EMCC_ARGS}
+        -s WASM=1)
+
+if (EMSCRIPTEN)
+  add_custom_command(
+          OUTPUT fcl.wasm.js fcl.wasm.wasm
+          COMMAND emcc ${CMAKE_CURRENT_BINARY_DIR}/glue.o ${CMAKE_CURRENT_BINARY_DIR}/lib/libfcl.a ${EMCC_WASM_ARGS} -o fcl.wasm.js
+          DEPENDS fcl-bindings ${AMMO_FRONT_MATTER_FILE} ${AMMO_ONLOAD_FILE} fcl
+          COMMENT "Building fcl webassembly"
+          VERBATIM)
+  add_custom_target(fcl-wasm ALL DEPENDS fcl.wasm.js fcl.wasm.wasm)
+endif ()

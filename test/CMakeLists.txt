@@ -67,6 +67,12 @@ macro(add_fcl_test test_file_name)
   add_executable(${test_name} ${ARGV})
   target_link_libraries(${test_name} fcl test_fcl_utility GTest::gtest_main)
   gtest_discover_tests(${test_name})
+
+  set_target_properties(${test_name} PROPERTIES LINK_FLAGS
+          " -s ALLOW_MEMORY_GROWTH=1 \
+            -s INITIAL_MEMORY=67108864 \
+            ")
+
 endmacro(add_fcl_test)
 
 # configure location of resources

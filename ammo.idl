@@ -1,0 +1,110 @@
+
+[Prefix="fcl::"]
+interface Vector3d {
+    void Vector3d();
+    void Vector3d(double x, double y, double z);
+
+};
+
+[Prefix="fcl::"]
+interface Matrix3d {
+    void Matrix3d();
+
+};
+
+[Prefix="fcl::"]
+interface CollisionGeometryd {
+
+};
+
+[Prefix="fcl::"]
+interface DynamicAABBTreeCollisionManagerd {
+    void DynamicAABBTreeCollisionManagerd();
+    void registerObject(CollisionObjectd obj);
+    void unregisterObject(CollisionObjectd obj);
+    void setup();
+    void update();
+    void clear();
+    boolean empty();
+    unsigned long size();
+};
+
+[Prefix="fcl::"]
+interface Boxd {
+    void Boxd(double x, double y, double z);
+};
+Boxd implements CollisionGeometryd;
+
+[Prefix="fcl::"]
+interface Coned {
+    void Coned(double radius, double lz);
+};
+Coned implements CollisionGeometryd;
+
+[Prefix="fcl::"]
+interface Capsuled {
+    void Capsuled(double radius, double lz);
+};
+Capsuled implements CollisionGeometryd;
+
+[Prefix="fcl::"]
+interface Cylinderd {
+    void Cylinderd(double radius, double lz);
+};
+Cylinderd implements CollisionGeometryd;
+
+[Prefix="fcl::"]
+interface Planed {
+    void Planed(double a, double b, double c, double d);
+    void Planed();
+};
+Planed implements CollisionGeometryd;
+
+[Prefix="fcl::"]
+interface Sphered {
+    void Sphered(double radius);
+};
+Sphered implements CollisionGeometryd;
+
+[Prefix="fcl::"]
+interface CollisionObjectd {
+
+};
+
+interface CollisionObjectDelegate {
+    void CollisionObjectDelegate(CollisionGeometryd cgeom);
+};
+CollisionObjectDelegate implements CollisionObjectd;
+
+interface DefaultCollisionDatad {
+    [Value] attribute CollisionRequestd request;
+    [Value] attribute CollisionResultd result;
+    attribute boolean done;
+};
+
+[Prefix="fcl::"]
+interface CollisionRequestd {
+    attribute unsigned long num_max_contacts;
+    attribute boolean enable_contact;
+};
+
+[Prefix="fcl::"]
+interface CollisionResultd {
+    void CollisionResultd();
+    boolean isCollision();
+    unsigned long numContacts();
+    unsigned long numCostSources();
+    void clear();
+    [Const, Ref] Contactd getContact(unsigned long i);
+};
+
+[Prefix="fcl::"]
+interface Contactd {
+    void Contactd();
+    [Const] attribute CollisionGeometryd o1;
+    [Const] attribute CollisionGeometryd o2;
+    attribute long b1;
+    attribute long b2;
+    [Value] attribute Vector3d normal;
+    [Value] attribute Vector3d pos;
+};
