@@ -37,6 +37,7 @@ interface DynamicAABBTreeCollisionManager {
     void unregisterObject(CollisionObjectDelegate obj);
     void defaultCollide(CollisionObjectDelegate obj, VoidPtr cdata);
     void internalCollide(VoidPtr cdata);
+    void collideWidth(DynamicAABBTreeCollisionManager manager, VoidPtr data);
     void setup();
     void update();
     void clear();

@@ -26,6 +26,10 @@ class DynamicAABBTreeCollisionManager : public fcl::DynamicAABBTreeCollisionMana
     this->collide(cdata, fcl::DefaultCollisionFunction);
   }
 
+  inline void collideWidth(DynamicAABBTreeCollisionManager* manager, void* cdata) const {
+    this->collide(manager, cdata, fcl::DefaultCollisionFunction);
+  }
+
 };
 
 using DefaultCollisionDatad = fcl::DefaultCollisionData<double>;
