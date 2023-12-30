@@ -456,7 +456,7 @@ add_custom_command(
         OUTPUT glue.cpp glue.js
         BYPRODUCTS parser.out WebIDLGrammar.pkl
         COMMAND ${PYTHON} ${WEBIDL_BINDER_SCRIPT} ${AMMO_IDL_FILE} glue
-        DEPENDS ${AMMO_IDL_FILE}
+        DEPENDS ${AMMO_IDL_FILE} ${CMAKE_CURRENT_SOURCE_DIR}/fcl_helper.h
         COMMENT "Generating ammo bindings"
         VERBATIM)
 add_custom_command(
@@ -473,7 +473,7 @@ set(TOTAL_MEMORY 67108864 CACHE STRING "Total Memory")
 set(EMCC_ARGS
 #        --extern-pre-js ${AMMO_FRONT_MATTER_FILE}
         --post-js glue.js
-#        --post-js ${AMMO_ONLOAD_FILE}
+        --post-js ${CMAKE_CURRENT_SOURCE_DIR}/post.js
         ${ARGS}
         -s EXPORT_ES6=1
         -s LLD_REPORT_UNDEFINED=1
@@ -481,7 +481,6 @@ set(EMCC_ARGS
         -s ALLOW_MEMORY_GROWTH=1
         -s EXPORTED_FUNCTIONS=["_malloc"]
         -s EXPORTED_RUNTIME_METHODS=["UTF8ToString"]
-        -s EXTRA_EXPORTED_RUNTIME_METHODS=["addFunction"]
         -s EXPORT_NAME="Fcl"
         -s MODULARIZE=1
         -s NO_EXIT_RUNTIME=1

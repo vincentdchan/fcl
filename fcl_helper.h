@@ -5,6 +5,7 @@
 #ifndef FCL_FCL_HELPER_H
 #define FCL_FCL_HELPER_H
 #include <memory>
+#include <emscripten.h>
 
 #include "fcl/broadphase/broadphase_dynamic_AABB_tree.h"
 #include "fcl/broadphase/broadphase_dynamic_AABB_tree_array.h"
@@ -53,5 +54,28 @@ public:
 };
 
 using DefaultCollisionDatad = fcl::DefaultCollisionData<double>;
+
+class FclHelper {
+public:
+
+  inline void vector3_set_x(fcl::Vector3d* vec3, double x) {
+    vec3->x() = x;
+  }
+
+  inline void vector3_set_y(fcl::Vector3d* vec3, double y) {
+    vec3->y() = y;
+  }
+
+  inline void vector3_set_z(fcl::Vector3d* vec3, double z) {
+    vec3->z() = z;
+  }
+
+  inline void vector3_set_values(fcl::Vector3d* vec3, double x, double y, double z) {
+    vec3->x() = x;
+    vec3->y() = y;
+    vec3->z() = z;
+  }
+
+};
 
 #endif  // FCL_FCL_HELPER_H

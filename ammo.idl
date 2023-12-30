@@ -136,7 +136,7 @@ interface DefaultCollisionDatad {
     attribute boolean done;
 };
 
-[Prefix="fcl::"]
+[Prefix="fcl::", NoDelete]
 interface CollisionRequestd {
     attribute unsigned long num_max_contacts;
     attribute boolean enable_contact;
@@ -146,7 +146,7 @@ interface CollisionRequestd {
     attribute GJKSolverType gjk_solver_type;
 };
 
-[Prefix="fcl::"]
+[Prefix="fcl::", NoDelete]
 interface CollisionResultd {
     void CollisionResultd();
     boolean isCollision();
@@ -170,4 +170,12 @@ interface Contactd {
 enum GJKSolverType {
     "fcl::GST_LIBCCD",
     "fcl::GST_INDEP"
+};
+
+[NoDelete]
+interface FclHelper {
+    void vector3_set_x(Vector3d vec3, double x);
+    void vector3_set_y(Vector3d vec3, double y);
+    void vector3_set_z(Vector3d vec3, double z);
+    void vector3_set_values(Vector3d vec3, double x, double y, double z);
 };
